@@ -10,7 +10,7 @@ CREATE TABLE Members (MemberID SERIAL PRIMARY KEY,
 );
 
 DROP TABLE IF EXISTS Contacts;
-CREATE TABLE Contacts(PrimaryKey SERIAL PRIMARY KEY,
+CREATE TABLE Contacts(ContactID SERIAL PRIMARY KEY,
                       MemberID_A INT NOT NULL,
                       MemberID_B INT NOT NULL,
                       Verified INT DEFAULT 0,
@@ -31,7 +31,7 @@ CREATE TABLE ChatMembers (ChatID INT NOT NULL,
 );
 
 DROP TABLE IF EXISTS Messages;
-CREATE TABLE Messages (PrimaryKey SERIAL PRIMARY KEY,
+CREATE TABLE Messages (MessageID SERIAL PRIMARY KEY,
                        ChatID INT,
                        Message VARCHAR(255),
                        MemberID INT,
@@ -41,7 +41,7 @@ CREATE TABLE Messages (PrimaryKey SERIAL PRIMARY KEY,
 );
 
 DROP TABLE IF EXISTS Locations;
-CREATE TABLE Locations (PrimaryKey SERIAL PRIMARY KEY,
+CREATE TABLE Locations (LocationID SERIAL PRIMARY KEY,
                         MemberID INT,
                         Nickname VARCHAR(255),
                         Lat DECIMAL,
@@ -49,13 +49,6 @@ CREATE TABLE Locations (PrimaryKey SERIAL PRIMARY KEY,
                         ZIP INT,
                         FOREIGN KEY(MemberID) REFERENCES Members(MemberID)
 );
-
-DROP TABLE IF EXISTS Demo;
-CREATE TABLE Demo (DemoID SERIAL PRIMARY KEY,
-                        Name VARCHAR(255) NOT NULL UNIQUE,
-                        Message VARCHAR(255)
-);
-
 
 DROP TABLE IF EXISTS Push_Token;
 CREATE TABLE Push_Token (KeyID SERIAL PRIMARY KEY,
