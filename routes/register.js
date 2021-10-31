@@ -14,6 +14,13 @@ const sendEmail = require('../utilities').sendEmail
 
 const router = express.Router()
 
+//Pull in the JWT module along with out a secret key
+const jwt = require('jsonwebtoken')
+const config = {
+    secret: process.env.JSON_WEB_TOKEN
+}
+const path = require('path');
+
 /**
  * @api {post} /auth Request to register a user
  * @apiName PostAuth
@@ -74,11 +81,22 @@ router.post('/', (request, response) => {
         pool.query(theQuery, values)
             .then(result => {
                 //We successfully added the user!
-                response.status(201).send({
-                    success: true,
-                    email: result.rows[0].email
-                })
-                sendEmail("INSERT CORRECT EMAIL HERE", email, "Welcome to our App!", "Please verify your Email account.")
+            console.log("result: ", result)
+            console.log("result.rows[0]: ", result.rows[0])
+            console.log("result.rows[0].memberid: ", result.rows[0].memberid)
+
+            let token = jwt.sign(
+                {
+                    "email": email
+                },
+                config.secret,
+                { 
+                    expiresIn: '14 days' // expires in 14 days
+                }
+            )
+            let verifyUrl = "https://yavuzalp-tcss450-labs.herokuapp.com/auth/verify/%s"
+            verifyUrl = verifyUrl.replace('%s', token);
+            sendEmail(email, "Welcome to our App!", verifyUrl)
             })
             .catch((error) => {
                 //log the error
@@ -98,6 +116,10 @@ router.post('/', (request, response) => {
                     })
                 }
             })
+        response.status(201).send({
+            success: true,
+            email: email
+        })
     } else {
         response.status(400).send({
             message: "Missing required information"
@@ -105,18 +127,38 @@ router.post('/', (request, response) => {
     }
 })
 
-router.get('/hash_demo', (request, response) => {
-    let password = 'hello12345'
-
-    let salt = generateSalt(32)
-    let salted_hash = generateHash(password, salt)
-    let unsalted_hash = generateHash(password)
-
-    response.status(200).send({
-        'salt': salt,
-        'salted_hash': salted_hash,
-        'unsalted_hash': unsalted_hash
-    })
+router.get('/verify/:token?', (request, response) => {
+    let token = request.params.token
+    let email;
+    //get member_id from token
+    jwt.verify(token, config.secret, (err, decoded) => {
+        if (err) {
+            return response.status(403).json({
+                success: false,
+                message: 'Token is not valid'
+            });
+        } else {
+            console.log("decoded: ", decoded)
+            email = decoded.email;
+        }
+      });
+    // update user verification on db.
+    let theQuery = "UPDATE MEMBERS SET Verification = 1 WHERE email = $1;"
+    let values = [email]
+    console.log("email: ", email)
+    pool.query(theQuery, values)
+        .then(result => {
+            console.log("Updated DB!")
+        })
+        .catch((error) => {
+            //log the error
+            console.log("error: ", error)
+            response.status(400).send({
+                message: "Error at updating information",
+                detail: error.detail
+            })
+        })
+    response.sendFile(path.join(__dirname, '../html/verifiedPage.html'));
 })
 
 
