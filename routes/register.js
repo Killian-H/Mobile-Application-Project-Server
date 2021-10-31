@@ -94,7 +94,7 @@ router.post('/', (request, response) => {
                     expiresIn: '14 days' // expires in 14 days
                 }
             )
-            let verifyUrl = "https://yavuzalp-tcss450-labs.herokuapp.com/auth/verify/%s"
+            let verifyUrl = "https://mobile-application-project-450.herokuapp.com/auth/verify/%s"
             verifyUrl = verifyUrl.replace('%s', token);
             sendEmail(email, "Welcome to our App!", verifyUrl)
             })
