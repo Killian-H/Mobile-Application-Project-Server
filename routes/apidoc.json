@@ -1,15 +1,10 @@
 {
-    "name": "TCSS 450 Lab Web Service",
+    "name": "TCSS 450 Mobile Application Project Team 7",
     "version": "0.1.0",
-    "description": "The TCSS 450 Lab Web Service API Documentation",
-    "title": "Lab API Doc",
-    "url" : "https://yavuzalp-tcss450-labs.herokuapp.com",
+    "description": "The TCSS 450 Mobile Application Project Web Service API Documentation",
+    "title": "Mobile Application Project API Doc",
+    "url" : "https://mobile-application-project-450.herokuapp.com",
     "order": [
-      "Hello",
-      "Params",
-      "Wait",
-      "DemoSql",
-      "Auth",
-      "Phish"
+      "Auth"
     ]
   }

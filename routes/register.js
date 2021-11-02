@@ -127,6 +127,22 @@ router.post('/', (request, response) => {
     }
 })
 
+
+/**
+ * @api {get} /auth/verify/:token Request to verify user email
+ * @apiName GetAuthVerify
+ * @apiGroup Auth
+ * 
+ * @apiParam {String} token a token received by email
+
+ * 
+ * @apiSuccess {html} Html page with success message
+ * 
+ * @apiError (403: Invalid Token) {String} message "Token is not valid"
+ * 
+ * @apiError (400: User not exists) {String} message "Error at updating information!"
+ * 
+ */ 
 router.get('/verify/:token?', (request, response) => {
     let token = request.params.token
     let email;
@@ -154,7 +170,7 @@ router.get('/verify/:token?', (request, response) => {
             //log the error
             console.log("error: ", error)
             response.status(400).send({
-                message: "Error at updating information",
+                message: "Error at updating information!",
                 detail: error.detail
             })
         })
