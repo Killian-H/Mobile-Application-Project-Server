@@ -94,6 +94,7 @@ router.post('/', (request, response) => {
                     expiresIn: '14 days' // expires in 14 days
                 }
             )
+            // URL for our heroku server endpoint.
             let verifyUrl = "https://mobile-application-project-450.herokuapp.com/auth/verify/%s"
             verifyUrl = verifyUrl.replace('%s', token);
             sendEmail(email, "Welcome to our App!", verifyUrl)
