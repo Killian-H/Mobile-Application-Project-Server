@@ -20,7 +20,7 @@ router.get('/' , (request, response) => {
 
             response.send({
 
-                memberid:values,
+               
                 rowCounts:result.rowCount,
                 rows:result.rows
 
