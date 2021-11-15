@@ -28,12 +28,10 @@ router.get("/", (request, response,next) => {
 
     //let memberid = request.decoded.memberid
 
-    let memberid = 54
-    let query  = `SELECT memberid_b,firstname,lastname,username,verified
-    FROM contacts JOIN members
-    ON memberid_a = memberid
-    WHERE memberid_a = $1
-    ORDER BY verified`
+    let memberid = 6
+    let query  = `SELECT *
+    FROM contacts
+    WHERE contactid = $1`
     pool.query(query,memberid)
     .then(result=>{
         response.send({
