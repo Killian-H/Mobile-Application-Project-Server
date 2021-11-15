@@ -24,7 +24,7 @@ router.get("/", (request, response,next) => {
     //     next()
     // }
 
-},(request,response)=>{
+},(request,response)=>{s
 
     //let memberid = request.decoded.memberid
     let memberid = 6
