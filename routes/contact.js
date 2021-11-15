@@ -7,14 +7,14 @@ const pool = require('../utilities').pool
 const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
 
-const generateHash = require('../utilities').generateHash
+
 
 const router = express.Router()
 
 
 router.get('/' , (request, response) => {
     const theQuery = "SELECT * FROM Members WHERE Memberid = $1"
-    const values = 6
+    const values = 54
     pool.query(theQuery, values)
         .then(result => { 
 
