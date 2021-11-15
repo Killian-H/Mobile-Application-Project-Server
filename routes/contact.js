@@ -12,7 +12,7 @@ const router = express.Router()
 
 
 router.get('/' , (request, response) => {
-    let theQuery = "SELECT * FROM Members"
+    let theQuery = "SELECT * FROM Contacts"
     pool.query(theQuery)
         .then(result => { 
 
