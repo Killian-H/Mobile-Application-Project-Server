@@ -25,7 +25,7 @@ app.use('/auth', require('./routes/register.js'))
 app.use('/auth', require('./routes/signin.js'))
 
  app.use('/weather', require('./routes/openWeather.js'))
- app.use('/contact',middleware.checkToken,require('./routes/contact.js'))
+ app.use('/contact',require('./routes/contact.js'))
  
 /*
  * Return HTML for the / end point. 
