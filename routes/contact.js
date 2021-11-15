@@ -12,8 +12,11 @@ const router = express.Router()
 
 
 router.get('/' , (request, response) => {
-    let theQuery = "SELECT * FROM Contacts"
-    pool.query(theQuery)
+
+
+    let theQuery = "SELECT Memberid_b,Firstname,Lastname,Username,verified FROM Contacts JOIN Members ON Memberid = Memberid_a WHERE Memberid = $1 ORDER BY verified DESC"
+    let memeberid  = request.body.memeberid
+    pool.query(theQuery,memeberid)
         .then(result => { 
 
             response.send({
