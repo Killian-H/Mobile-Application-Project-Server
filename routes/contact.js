@@ -10,11 +10,51 @@ const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
 
 
-router.get("/", (request, response) => {
-    response.send({
-        message: "Hello, you sent a GET request"
+router.get("/", (request, response,next) => {
+    if(!request.body.token){
+
+        response.status(400).send({
+            
+            message:"Missing required information"
+
+        })
+    }
+    else{
+        next()
+    }
+
+},(request,response)=>{
+
+    let memberid = request.decoded.memberid
+    let query  = `SELECT  memberid_b, firstname,lastname,username,verified
+    FROM contacts JOIN members
+    ON memberid_a = memberid
+    WHERE memberid_a = $1
+    ORDER BY verified DESC`
+    pool.query(query,memberid)
+    .then(result=>{
+        response.send({
+            memberid:memberid,
+            rowCount:result.rowCount,
+            rows:result.rows
+
+
+        })
+
+    }).catch(err=>{
+
+        response.status(400).send({
+
+            message:"SQL Error",
+            error:err
+        })
+
+
     })
-})
+    
+
+
+});
 
 /**
  * @api {post} /hello Request a Hello World message
