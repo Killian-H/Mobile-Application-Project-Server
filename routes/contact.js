@@ -29,9 +29,7 @@ router.get("/", (request, response,next) => {
     //let memberid = request.decoded.memberid
 
     let memberid = 6
-    let query  = `SELECT *
-    FROM contacts
-    WHERE contactid = $1`
+    let query  = "SELECT * FROM contacts WHERE contactid = $1"
     pool.query(query,memberid)
     .then(result=>{
         response.send({
