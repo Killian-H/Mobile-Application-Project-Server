@@ -8,13 +8,12 @@ const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
 
 
-
 const router = express.Router()
 
 
 router.get('/' , (request, response) => {
-    const theQuery = "SELECT * FROM Members WHERE Memberid = $1"
-    const memberid = 54
+    let theQuery = "SELECT * FROM Members WHERE Memberid = $1"
+    let memberid = 54
     pool.query(theQuery, memberid)
         .then(result => { 
 
@@ -27,7 +26,6 @@ router.get('/' , (request, response) => {
 
             })
 
-            
             
         })
         .catch((err) => {
