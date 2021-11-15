@@ -27,29 +27,21 @@ router.get("/", (request, response,next) => {
 },(request,response)=>{
 
     //let memberid = request.decoded.memberid
-
     let memberid = 6
-    let query  = "SELECT * FROM contacts WHERE contactid = $1"
-    pool.query(query,memberid)
-    .then(result=>{
-        response.send({
-            memberid:memberid,
-            rowCount:result.rowCount,
-            rows:result.rows
-
-
-        })
-
-    }).catch(err=>{
-
-        response.status(400).send({
-
-            message:"SQL Error",
-            error:err
-        })
-
-
-    })
+    let query = `SELECT * FROM contacts WHERE contactid = $1`
+        pool.query(query, memberid)
+            .then(result => {
+                response.send({
+                    memberid: memberid,
+                    rowCount : result.rowCount,
+                    rows: result.rows
+                })
+            }).catch(err => {
+                response.status(400).send({
+                    message: "SQL Error",
+                    error: err
+                })
+            })
     
 
 
