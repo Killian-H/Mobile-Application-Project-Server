@@ -11,17 +11,18 @@ let isStringProvided = validation.isStringProvided
 
 
 router.get("/", (request, response,next) => {
-    if(!request.body.token){
+    next()
+    // if(!request.body.token){
 
-        response.status(400).send({
+    //     response.status(400).send({
             
-            message:"Missing required information"
+    //         message:"Missing required information"
 
-        })
-    }
-    else{
-        next()
-    }
+    //     })
+    // }
+    // else{
+    //     next()
+    // }
 
 },(request,response)=>{
 
