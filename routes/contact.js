@@ -29,7 +29,7 @@ router.get("/", (request, response,next) => {
     //let memberid = request.decoded.memberid
 
     let memberid = 54
-    let query  = `SELECT  memberid_b, firstname,lastname,username,verified
+    let query  = `SELECT memberid_b,firstname,lastname,username,verified
     FROM contacts JOIN members
     ON memberid_a = memberid
     WHERE memberid_a = 54
