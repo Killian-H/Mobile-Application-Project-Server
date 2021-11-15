@@ -32,7 +32,7 @@ router.get("/", (request, response,next) => {
     let query  = `SELECT memberid_b,firstname,lastname,username,verified
     FROM contacts JOIN members
     ON memberid_a = memberid
-    WHERE memberid_a = 54
+    WHERE memberid_a = $1
     ORDER BY verified`
     pool.query(query,memberid)
     .then(result=>{
