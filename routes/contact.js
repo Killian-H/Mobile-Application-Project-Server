@@ -33,7 +33,7 @@ router.get("/", (request, response,next) => {
     FROM contacts JOIN members
     ON memberid_a = memberid
     WHERE memberid_a = 54
-    ORDER BY verified DESC`
+    ORDER BY verified`
     pool.query(query,memberid)
     .then(result=>{
         response.send({
