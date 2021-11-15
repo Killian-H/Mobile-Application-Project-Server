@@ -12,9 +12,8 @@ const router = express.Router()
 
 
 router.get('/' , (request, response) => {
-    let theQuery = "SELECT * FROM Members WHERE Memberid = $1"
-    let memberid = 54
-    pool.query(theQuery, memberid)
+    let theQuery = "SELECT * FROM Members"
+    pool.query(theQuery)
         .then(result => { 
 
             response.send({
