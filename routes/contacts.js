@@ -161,12 +161,48 @@ router.post("/",(request,response,next)=>{
     })
     
 
-},(request,response)=>{
+},(request,response,next)=>{
 
     const verified = 0;
     let values = [request.decoded.memberid,request.body.memberid_b,verified]
-    let theQuery = "INSERT INTO Contacts(Memberid_a,Memberid_b,Verified) VALUES($1,$2,$3) RETURNING memberid_a AS memberid,memberid_b,verified"
-    pool.query(theQuery,values)
+    let theQueryA = "INSERT INTO Contacts(Memberid_a,Memberid_b,Verified) VALUES($1,$2,$3) RETURNING memberid_a AS memberid,memberid_b,verified"
+    pool.query(theQueryA,values)
+    .then(result=>{
+
+        if(result.rowCount == 1){
+
+           next()
+            
+
+        } else {
+
+            response.status(400).send({
+                message:"Insert failed"
+            })
+        }
+
+
+    }
+        
+        ).catch(error=>{
+
+            response.status(400).send({
+
+                message:"Inserted Failed",
+                message:error
+            })
+
+           
+        }
+        )
+
+},(request,response)=>{
+
+
+    const verified = 0;
+    let values = [request.body.memberid_b,request.decoded.memberid,verified]
+    let theQueryA = "INSERT INTO Contacts(Memberid_a,Memberid_b,Verified) VALUES($1,$2,$3) RETURNING memberid_a AS memberid,memberid_b,verified"
+    pool.query(theQueryA,values)
     .then(result=>{
 
         if(result.rowCount == 1){
@@ -194,13 +230,14 @@ router.post("/",(request,response,next)=>{
 
             response.status(400).send({
 
-                message:"SQL Error on Insertion",
-                error:error
+                message:"Inserted Failed",
+                message:error
             })
+
+           
         }
         )
-    
-    
+
 
 })
 
