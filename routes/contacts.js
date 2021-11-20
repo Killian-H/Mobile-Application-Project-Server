@@ -171,7 +171,7 @@ router.get("/search",(request,response,next)=>{
 
                 success : true,
                 rowNum:result.rowCount,
-                rows:result.rows[0]
+                rows:result.rows
 
 
             })
