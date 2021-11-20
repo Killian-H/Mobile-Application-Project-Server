@@ -66,6 +66,147 @@ router.get('/' , (request, response,next) => {
 
 })
 
+router.get("/search",(request,response,next)=>{
+
+    console.log(request.body.username)
+    console.log(request.body.email)
+    console.log(request.body.memberid)
+    
+
+    if(!isStringProvided(request.body.username) & !isStringProvided(request.body.email) & isNaN(request.body.memberid)){
+
+
+        response.status(400).send({
+
+            message:"Missing required information"
+
+        })
+
+    } else {
+
+        next()
+    }
+
+
+},(request,response)=>{
+
+    var values;
+    var requestKey;
+    var theQuery;
+
+    let length = Object.keys(request.body).length
+    
+    if(length == 1){
+
+        if(!isNaN(request.body.memberid)) {
+
+        requestKey = "Memberid"
+        values = [request.body.memberid]
+   
+        } else {
+
+            if(isStringProvided(request.body.username)){
+
+            requestKey = "Username"
+            values =[request.body.username]
+
+
+        } else {
+
+                requestKey = "Email"
+                values = [request.body.email]
+             }
+
+    }
+
+    theQuery = "Select memberid,firstname,lastname,username,email FROM Members WHERE "+requestKey+"=$1"
+    
+    
+    } else if(length == 2) {
+    if(isStringProvided(request.body.username) & isStringProvided(request.body.email)){
+
+        values =[request.body.username,request.body.email]
+        theQuery = "Select memberid,firstname,lastname,username,email FROM Members WHERE Username = $1 AND Email = $2"
+
+    } else if(isStringProvided(request.body.username) & !isNaN(request.body.memberid)){
+        
+        values =[request.body.username,request.body.memberid]
+        theQuery = "SELECT memberid,firstname,lastname,username,email FROM Members WHERE Username = $1 AND Memberid = $2"
+
+    } else {
+        
+        values =[request.body.email,request.body.memberid]
+        theQuery = "SELECT memberid,firstname,lastname,username,email FROM Members WHERE Email = $1 AND Memberid = $2"
+
+    }
+    }else{
+        
+        values =[request.body.username,request.body.email,request.body.memberid]
+        theQuery = "SELECT memberid,firstname,lastname,username,email FROM Members WHERE Username = $1 AND Email = $2 AND Memberid = $3"
+
+
+    }
+    console.log("The final values is "+values)
+    console.log("The final query is "+theQuery)
+
+
+    pool.query(theQuery,values)
+    .then(result=>{
+        
+        if(result.rowCount == 0){
+
+            response.status(404).send({
+
+                message:"User is not found"
+
+            }
+            
+            )
+
+        }
+
+        else {
+
+            response.send({
+
+                success : true,
+                rowNum:result.rowCount,
+                rows:result.rows[0]
+
+
+            })
+
+        }
+
+
+    }
+        
+        ).catch(error=>{
+
+            response.status(400).send({
+                message:"SQL error occured at searching user",
+                error:error
+
+
+            })
+
+        })
+    
+    
+
+
+    
+
+    
+  
+    
+
+
+
+
+})
+
+
 
 
 
