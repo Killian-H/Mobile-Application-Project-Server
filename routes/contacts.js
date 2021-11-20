@@ -66,7 +66,7 @@ router.get('/' , (request, response,next) => {
 
 })
 
-router.get("/search",(request,response,next)=>{
+router.post("/search",(request,response,next)=>{
 
     console.log(request.body.username)
     console.log(request.body.email)
