@@ -25,7 +25,7 @@ router.get("/", (req, res) => {
     // for info on use of tilde (`) making a String literal, see below. 
     //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
     // url for openweather api call. Must provide lat and long 
-    let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${LATITUDE}&lon=${LONGITUDE}&exclude=minutely&appid=${API_KEY}`
+    let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${LATITUDE}&lon=${LONGITUDE}&exclude=minutely&units=imperial&appid=${API_KEY}`
 
     
 
