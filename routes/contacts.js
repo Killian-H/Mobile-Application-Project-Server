@@ -75,9 +75,8 @@ router.get('/' , (request, response,next) => {
 
 /**
  * @apiDefine JSONError
- * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
  * 
- * @api {post} /contacts/search  search a user from the database for adding other users to the contact
+ * @api {post} /search  search a user from the database for adding other users to the contact
  * @apiName SearchContacts
  * @apiGroup Contacts
  * 
