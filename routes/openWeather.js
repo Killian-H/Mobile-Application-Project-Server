@@ -16,7 +16,7 @@ var router = express.Router()
  * 
  * @apiDescription This end point is a pass through to the OpenWeather API
  */
-router.get("/", (req, res) => {
+router.post("/", (req, res) => {
     //grab location parameters  
     
     const LATITUDE = req.body.lat
