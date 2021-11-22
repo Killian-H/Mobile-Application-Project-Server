@@ -11,15 +11,20 @@ let isStringProvided = validation.isStringProvided
 const router = express.Router()
 
 
+/**
+ * @apiDefine JSONError
+ * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
+ */ 
 
 /**
- * @api {get} /contacts Request to get list of contacts 
+ * @api {get} /contacts Request to get contact list
  * @apiName GetContacts
  * @apiGroup Contacts
  * 
  * @apiDescription Request to get list of contacts
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
- * @apiSuccess {Object[]} contacts List of contacts
+ * @apiSuccess {Object[]} the contact list of the user
  * 
  * @apiError (400: Missing required information) {String} message the missing token information
  * 
@@ -65,6 +70,44 @@ router.get('/' , (request, response,next) => {
     })
 
 })
+
+
+
+/**
+ * @apiDefine JSONError
+ * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
+ * 
+ * @api {post} /contacts/search  search a user from the database for adding other users to the contact
+ * @apiName SearchContacts
+ * @apiGroup Contacts
+ * 
+ * @apiDescription Search a user by its id,username or email
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * @apiParam {Number}memberid memberid to search the user
+ * @apiParam {String}email email to search the user
+ * @apiParam {String}username username to search the user
+ * 
+ * @apiParamExample {json} Request-Body-Example:
+ *  
+ *     {
+ *       "memberid": 35,
+ *       "email": "zhong4475@gmail.com",
+ *       "username": "zhong4475@gmail.com"
+ *     } 
+ * 
+ * @apiSuccess {boolean} success true user is found from the database
+ * @apiSuccess {number} rowNum number of rows return from the SQL query
+ * @apiSuccess {Object[]} rows the rows contain the user information included its id, first name,last name,email and username
+ * 
+ * @apiError (400: Missing required information) {String} message "Missing require information"
+ * 
+ * @apiError (404: unknown user) {String} user is not found
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *  
+ * @apiUse JSONError
+ */
 
 router.post("/search",(request,response,next)=>{
 
@@ -210,6 +253,43 @@ router.post("/search",(request,response,next)=>{
 
 
 
+/**
+ * @api {post} /contacts add a user into the contacts 
+ * @apiName PostContacts
+ * @apiGroup Contacts
+ * 
+ * @apiDescription Insert a user into the contacts
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * 
+ * @apiParam {Number} memberid_b the member id to insert into the contact
+ * 
+ * @apiParamExample {json} Request-Body-Example:
+ *  
+ *     {
+ *       "memberid_b": 35
+ *       
+ *     } 
+ * 
+ * 
+ * 
+ * @apiSuccess {boolean} success true when the user sucessfully inserted
+ * @apiSuccess {Object[]} row the deleted row information
+ * 
+ * 
+ * @apiError (400: Missing required information) {String} message "Missing required information"
+ * 
+ * @apiError (400: Malformed parameter) {String} message "the memberid_b must be a number"
+ * 
+ * @apiError (404: unknown memberid) {String} message "the user is not found"
+ *
+ * @apiError (400: memberid is existed in the contact) {String} message "Memberid_b already existed in the contact"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ *  
+ * @apiUse JSONError
+ */
 
 router.post("/",(request,response,next)=>{
     
@@ -278,7 +358,7 @@ router.post("/",(request,response,next)=>{
 
         if(result.rowCount == 1){
 
-            response.status(404).send({
+            response.status(400).send({
 
                 message:"Memberid_b already existed in the contact"
                 
@@ -381,6 +461,45 @@ router.post("/",(request,response,next)=>{
 
 
 })
+
+
+/**
+ * @api {delete} /contacts delete a user from the contact
+ * @apiName DeleteContacts
+ * @apiGroup Contacts
+ * 
+ * @apiDescription remove a memberid_b from the contact
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * 
+ * @apiParam {Number} memberid_b the member id to remove from the contact
+ * 
+ * @apiParamExample {json} Request-Body-Example:
+ *  
+ *     {
+ *       "memberid_b": 35
+ *       
+ *     } 
+ * 
+ * 
+ * 
+ * @apiSuccess {boolean} success true when the user is sucessfully deleted
+ * @apiSuccess {Object[]} row the deleted row information
+ * 
+ * 
+ * @apiError (400: Missing required information) {String} message "Missing required information"
+ * 
+ * @apiError (400: Malformed parameter) {String} message "the memberid_b must be a number"
+ * 
+ * @apiError (404: unknown memberid) {String} message "the user is not found"
+ *
+ * @apiError (400: unkown memberid in the contact) {String} message "Memberid_b is not in the contact"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ *  
+ * @apiUse JSONError
+ */
 
 
 router.delete('/',(request,response,next)=>{
