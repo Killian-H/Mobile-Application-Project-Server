@@ -502,8 +502,7 @@ router.post("/",(request,response,next)=>{
 
 
 router.delete('/:memberid_b',(request,response,next)=>{
-    let memberid_b = request.params.memberid_b
-    if(!request.decoded.memberid || !memberid_b){
+    if(!request.decoded.memberid || !request.params.memberid_b){
 
         response.status(400).send({
 
@@ -511,7 +510,7 @@ router.delete('/:memberid_b',(request,response,next)=>{
 
         }) 
 
-    }else if (isNaN(memberid_b)){
+    }else if (isNaN(request.params.memberid_b)){
 
 
         response.status(400).send({
