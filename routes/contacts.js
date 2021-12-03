@@ -594,7 +594,7 @@ router.delete('/:memberid_b',(request,response,next)=>{
 
     let values = [request.decoded.memberid,request.params.memberid_b]
 
-    let theQuery = "DELETE FROM contacts WHERE memberid_a = $1 AND memberid_b = $2 RETURNING *"
+    let theQuery = "DELETE FROM contacts WHERE (memberid_a = $1 AND memberid_b = $2) OR (memberid_a = $2 AND memberid_b = $1) RETURNING *"
     pool.query(theQuery,values)
     .then(result=>{
 
