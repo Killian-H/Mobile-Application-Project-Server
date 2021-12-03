@@ -75,6 +75,69 @@ router.get('/' , (request, response,next) => {
 
 /**
  * @apiDefine JSONError
+ * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
+ */ 
+
+/**
+ * @api {get} /contacts/requests Request to get list of incoming contact requests. 
+ * @apiName GetContactRequests
+ * @apiGroup Contacts
+ * 
+ * @apiDescription Request to get list of incoming contact requests. 
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * @apiSuccess {Object[]} the contact list of the user
+ * 
+ * @apiError (400: Missing required information) {String} message the missing token information
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ *  
+ * @apiUse JSONError
+ */
+
+ router.get('/requests' , (request, response,next) => {
+
+    if(!request.decoded.memberid){
+        response.status(400).send({
+
+           message: "Missing reuqired information"
+        })
+        
+    } else {
+        next()
+    }
+    
+}, (request,response)=>{
+
+    let memberid = [request.decoded.memberid]
+    let theQuery = "SELECT Memberid_a,Firstname,Lastname,Username,Email,verified FROM Contacts JOIN Members ON Memberid_a = Memberid WHERE Memberid_b = $1 and verified = 0 ORDER BY Firstname ASC"
+    pool.query(theQuery,memberid)
+    .then(result => {
+
+        response.send({
+
+            memberid:memberid[0],
+            rowCounts:result.rowCount,
+            rows:result.rows
+        })
+       
+    })
+    .catch((err) => {
+        //log the error
+       
+        response.status(400).send({
+            message: "SQL Error",
+            error:err
+        })
+    })
+
+})
+
+
+
+
+/**
+ * @apiDefine JSONError
  * 
  * @api {post} /search  search a user from the database for adding other users to the contact
  * @apiName SearchContacts
