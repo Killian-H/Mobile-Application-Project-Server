@@ -501,9 +501,9 @@ router.post("/",(request,response,next)=>{
  */
 
 
-router.delete('/',(request,response,next)=>{
-
-    if(!request.decoded.memberid || !request.body.memberid_b){
+router.delete('/:memberid_b',(request,response,next)=>{
+    let memberid_b = request.params.memberid_b
+    if(!request.decoded.memberid || !memberid_b){
 
         response.status(400).send({
 
@@ -511,7 +511,7 @@ router.delete('/',(request,response,next)=>{
 
         }) 
 
-    }else if (isNaN(request.body.memberid_b)){
+    }else if (isNaN(memberid_b)){
 
 
         response.status(400).send({
@@ -529,7 +529,7 @@ router.delete('/',(request,response,next)=>{
 
 },(request,response,next)=>{
     
-    let values = [request.body.memberid_b]
+    let values = [request.body.request.params.memberid_b]
     let theQuery = "SELECT * FROM Members WHERE Memberid = $1"
     pool.query(theQuery,values)
     .then(result=>{
@@ -559,7 +559,7 @@ router.delete('/',(request,response,next)=>{
 
 },(request,response,next)=>{
 
-    let values = [request.decoded.memberid,request.body.memberid_b]
+    let values = [request.decoded.memberid,request.params.memberid_b]
     let theQuery = "SELECT * FROM Contacts WHERE Memberid_a = $1 AND Memberid_b = $2"
     pool.query(theQuery,values)
     .then(result=>{
@@ -593,7 +593,7 @@ router.delete('/',(request,response,next)=>{
 
 },(request,response)=>{
 
-    let values = [request.decoded.memberid,request.body.memberid_b]
+    let values = [request.decoded.memberid,request.params.memberid_b]
 
     let theQuery = "DELETE FROM contacts WHERE memberid_a = $1 AND memberid_b = $2 RETURNING *"
     pool.query(theQuery,values)
