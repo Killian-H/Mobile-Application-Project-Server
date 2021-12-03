@@ -528,7 +528,7 @@ router.delete('/:memberid_b',(request,response,next)=>{
 
 },(request,response,next)=>{
     
-    let values = [request.body.request.params.memberid_b]
+    let values = [request.params.memberid_b]
     let theQuery = "SELECT * FROM Members WHERE Memberid = $1"
     pool.query(theQuery,values)
     .then(result=>{
