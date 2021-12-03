@@ -48,7 +48,7 @@ router.get('/' , (request, response,next) => {
 }, (request,response)=>{
 
     let memberid = [request.decoded.memberid]
-    let theQuery = "SELECT Memberid_b,Firstname,Lastname,Username,Email,verified FROM Contacts JOIN Members ON Memberid_b = Memberid WHERE Memberid_a = $1 ORDER BY verified DESC"
+    let theQuery = "SELECT Memberid_b as MemberId,Firstname,Lastname,Username,Email,verified FROM Contacts JOIN Members ON Memberid_b = Memberid WHERE Memberid_a = $1 ORDER BY verified DESC"
     pool.query(theQuery,memberid)
     .then(result => {
 
@@ -110,7 +110,7 @@ router.get('/' , (request, response,next) => {
 }, (request,response)=>{
 
     let memberid = [request.decoded.memberid]
-    let theQuery = "SELECT Memberid_a,Firstname,Lastname,Username,Email,verified FROM Contacts JOIN Members ON Memberid_a = Memberid WHERE Memberid_b = $1 and verified = 0 ORDER BY Firstname ASC"
+    let theQuery = "SELECT Memberid_a as MemberId,Firstname,Lastname,Username,Email,verified FROM Contacts JOIN Members ON Memberid_a = Memberid WHERE Memberid_b = $1 and verified = 0 ORDER BY Firstname ASC"
     pool.query(theQuery,memberid)
     .then(result => {
 
