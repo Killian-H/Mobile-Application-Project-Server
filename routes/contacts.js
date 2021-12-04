@@ -7,6 +7,7 @@ const pool = require('../utilities').pool
 const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
 
+const contact_function = require('../utilities/exports').messaging
 
 const router = express.Router()
 
@@ -336,7 +337,7 @@ router.post("/search",(request,response,next)=>{
  * 
  * 
  * @apiSuccess {boolean} success true when the user sucessfully inserted
- * @apiSuccess {Object[]} row the deleted row information
+ * @apiSuccess {} 
  * 
  * 
  * @apiError (400: Missing required information) {String} message "Missing required information"
@@ -346,8 +347,11 @@ router.post("/search",(request,response,next)=>{
  * @apiError (404: unknown memberid) {String} message "the user is not found"
  *
  * @apiError (400: memberid is existed in the contact) {String} message "Memberid_b already existed in the contact"
+ *  
+ * @apiError (404:memberid_b pushy_token not found) {String} message "The device assoicated with the memberid has not been registered to the pushy yet"
  * 
  * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
  * 
  *  
  * @apiUse JSONError
@@ -454,6 +458,7 @@ router.post("/",(request,response,next)=>{
 
         if(result.rowCount == 1){
 
+            
            next()
             
 
@@ -479,7 +484,7 @@ router.post("/",(request,response,next)=>{
         }
         )
 
-},(request,response)=>{
+},(request,response,next)=>{
 
 
     const verified = 0;
@@ -490,13 +495,9 @@ router.post("/",(request,response,next)=>{
 
         if(result.rowCount == 1){
 
-            response.send({
-                
-                success:true,
-                row:result.rows[0]
+           
 
-
-            })
+            next()
             
 
         } else {
@@ -520,6 +521,55 @@ router.post("/",(request,response,next)=>{
            
         }
         )
+
+
+},(request,response)=>{
+    
+  
+    let values = [request.body.memberid_b]
+    let theQuery = `SELECT memberid,Token FROM push_token WHERE memberid = $1`
+    pool.query(theQuery,values)
+    .then(result=>{
+
+        if(result.rowCount == 0){
+
+            response.status(404).send({
+
+                message:"memberid_b pushy_token not found"
+
+            })
+        }
+
+        else{
+
+            contact_function.sendContactToIndividual(result.rows[0].token,result.rows[0].memberid)
+            
+
+            response.send({
+                success:true,
+                memberid: result.rows[0].memberid,
+                token: result.rows[0].token,
+                message:"Contact is added,but has not verified"
+            })
+
+
+           
+
+            
+          
+
+        }
+
+    }).catch(err=>{
+
+        response.status(400).send({
+            message: "SQL Error on select from push token for unverified member",
+            error: err
+        })
+
+    })
+
+
 
 
 })
