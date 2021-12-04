@@ -525,7 +525,7 @@ router.post("/",(request,response,next)=>{
 
 },(request,response)=>{
     
-  
+    var token;
     let values = [request.body.memberid_b]
     let theQuery = `SELECT memberid,Token FROM push_token WHERE memberid = $1`
     pool.query(theQuery,values)
@@ -541,23 +541,9 @@ router.post("/",(request,response,next)=>{
         }
 
         else{
-
-            contact_function.sendContactToIndividual(result.rows[0].token,result.rows[0].memberid)
+            console.log("Memberid:"+result.rows[0].memberid)
             
-
-
-            response.send({
-                success:true,
-                memberid: result.rows[0].memberid,
-                token: result.rows[0].token,
-                message:"Contact is added,but has not verified"
-            })
-
-
-           
-
-            
-          
+            token = result.rows[0].token
 
         }
 
@@ -569,6 +555,28 @@ router.post("/",(request,response,next)=>{
         })
 
     })
+
+    let values1 = [request.decoded.memberid]
+    let theQuery1 = `SELECT Username FROM Members WHERE memberID = $1`
+    pool.query(theQuery1,values1)
+    .then(result=>{
+
+        console.log("Member Pushy_token: "+token)
+
+        contact_function.sendContactToIndividual(token,result.rows[0].username)
+
+        response.send({
+            success:true,
+            message:"Contact added successfully!!"
+
+        })
+
+
+    })
+
+
+    
+
 
 
 

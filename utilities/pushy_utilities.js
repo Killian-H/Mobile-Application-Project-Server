@@ -29,12 +29,13 @@ function sendMessageToIndividual(token, message) {
     })
 }
 
-function sendContactToIndividual(token,memberid) {
+function sendContactToIndividual(token,username) {
 
     //build the message for Pushy to send
     var data = {
-        "type": "contact",
-        "memberid": memberid
+        "type": "contactRequest",
+         "username" :username,
+         "message" :username+" send you a contact request"
     }
 
 
@@ -47,7 +48,8 @@ function sendContactToIndividual(token,memberid) {
         }
 
         // Log success 
-        console.log('Push sent successfully! (ID: ' + id + ')')
+        console.log('Contact Push sent successfully! (ID: ' + id + ')')
+        console.log(data.message)
     })
 }
 
