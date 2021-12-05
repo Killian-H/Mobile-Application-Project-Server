@@ -563,7 +563,7 @@ router.post("/",(request,response,next)=>{
 
         console.log("Member Pushy_token: "+token)
 
-        contact_function.sendContactToIndividual(token,result.rows[0].username)
+        contact_function.sendContactToIndividual(token,result.rows[0].username,request.decoded.memberid)
 
         response.send({
             success:true,
