@@ -51,7 +51,7 @@ function sendContactToIndividual(token,username,memberid) {
 
         // Log success 
         console.log('Contact Push sent successfully! (ID: ' + id +' sent from memberid : '+data.memberid+" to token "+token+" ) ")
-        //console.log(data.message)
+        console.log(data.message)
     })
 }
 
