@@ -6,10 +6,14 @@ const pool = require('../utilities').pool
 
 const validation = require('../utilities').validation
 let isStringProvided = validation.isStringProvided
+let isBooleanProvide = validation.isBooleanProvide
 
 const contact_function = require('../utilities/exports').messaging
 
 const router = express.Router()
+
+
+
 
 
 /**
@@ -740,6 +744,161 @@ router.delete('/:memberid_b',(request,response,next)=>{
     })
 
 
+})
+
+
+router.post("/verify",(request,response,next)=>{
+   
+    console.log("-------------------------------------")
+    console.log("Verify option: "+request.body.option)
+
+
+    if(!request.decoded.memberid ||!isBooleanProvide(request.body.option)||!request.body.memberid){
+        response.status(400).send({
+
+           message: "Missing reuqired information"
+        })
+        
+    }  else {
+        
+        next()
+    
+    }
+    
+
+
+},(request,response,next)=>{
+
+    
+  
+
+
+    
+    let pushyvalues = [request.decoded.memberid,request.body.memberid]
+    let pushyQuery = `SELECT Contacts.memberid_a As memberid, Members.username AS username, Push_token.token AS token  
+                      FROM Contacts INNER JOIN Members ON memberid = memberid_a 
+                      INNER JOIN Push_Token ON memberid_b = Push_token.memberid 
+                      WHERE memberid_a = $1 AND memberid_b = $2`
+    
+    pool.query(pushyQuery,pushyvalues)
+    .then(result=>{
+
+        let token = result.rows[0].token
+
+        console.log("Notify memberid : "+request.body.memberid)
+        console.log("Notify memberid token :"+token)
+
+
+        let username = result.rows[0].username
+        console.log("Contact request accpcted by memberid : "+result.rows[0].memberid)
+        console.log("Contact request accepted by  username :"+username)
+       
+        contact_function.sendVerifyStatus(token,username,request.decoded.memberid,request.body.option)
+
+    }).catch(err=>{
+
+        response.status(400).send({
+            message:"SQL error at retrive token from pushy_token table",
+            err
+
+        })
+    })
+
+    next()
+
+},(request,response)=>{
+
+
+    var values,theQuery
+
+    if(request.body.option){
+
+        
+
+        values = [request.decoded.memberid,request.body.memberid]
+        theQuery = " UPDATE Contacts SET Verified = 1 WHERE (Memberid_a = $1 AND Memberid_b = $2 ) OR (Memberid_a = $2 AND memberid_b = $1 ) RETURNING *"
+        pool.query(theQuery,values)
+        .then(result=>{
+
+            console.log("DataBase updated:")
+            console.log(result.rows[0])
+            console.log(result.rows[1])
+
+            response.status(200).send({
+
+                message :"Updated successfully!Verified code = 1",
+                updatedrows:result.rows
+
+
+            })
+            
+
+        }
+        ).catch(err=>{
+
+            response.status(400).send({
+                message:"SQL error at update verified",
+                err
+
+            })
+
+        })
+
+        
+
+         
+        
+
+    }else{
+
+
+        values = [request.decoded.memberid,request.body.memberid]
+        theQuery = " DELETE FROM contacts WHERE (memberid_a = $1 AND memberid_b = $2) OR (memberid_a = $2 AND memberid_b = $1) RETURNING *"
+        pool.query(theQuery,values)
+        .then(result=>{
+
+            console.log("DataBase deleted:")
+            console.log(result.rows[0])
+            console.log(result.rows[1])
+
+            response.status(200).send({
+
+                message :"Removed successfully!User declined contact request",
+                deletedrows:result.rows
+
+
+            })
+            
+
+        }
+        ).catch(err=>{
+
+            response.status(400).send({
+                message:"SQL error at deleted verified",
+                err
+
+            })
+
+        })
+
+
+
+
+
+
+
+
+        
+
+    }
+    
+   
+       
+
+
+
+
+   
 })
 
 

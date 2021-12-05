@@ -56,8 +56,52 @@ function sendContactToIndividual(token,username,memberid) {
 }
 
 
+function sendVerifyStatus(token,username,memberid,option) {
+
+    var message
+    
+    if(option){
+
+        message  = "username: " + username + " (memberid: "+memberid+ " )" + "accpted your contact request"
+
+    } else {
+
+        message  = "username: " + username + " (memberid: "+memberid+ " )" + "declined your contact request"
+
+    }
+
+   
+
+    //build the message for Pushy to send
+    var data = {
+        "type": "verifyStatus",
+        "memberid":memberid,
+        "username":username,
+         "option":option,
+         "message":message
+         
+    }
+
+
+    // Send push notification via the Send Notifications API 
+    // https://pushy.me/docs/api/send-notifications 
+    pushyAPI.sendPushNotification(data, token, {}, function (err, id) {
+        // Log errors to console 
+        if (err) {
+            return console.log('Fatal Error', err);
+        }
+
+        // Log success 
+        console.log('Verify Push sent successfully! (ID: ' + id +' sent from username : '+data.username+" to token "+token+" ) ")
+        console.log('message: '+ data.message)
+        
+        
+    })
+}
+
+
 //add other "sendTypeToIndividual" functions here. Don't forget to export them
 
 module.exports = {
-    sendMessageToIndividual,sendContactToIndividual
+    sendMessageToIndividual,sendContactToIndividual,sendVerifyStatus
 }

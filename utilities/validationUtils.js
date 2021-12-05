@@ -9,12 +9,17 @@ let isStringProvided = (param) =>
     param !== undefined && param.length > 0
 
 
+
+
 // Feel free to add your own validations functions!
 // for example: isNumericProvided, isValidPassword, isValidEmail, etc
 // don't forget to export any 
 
+let isBooleanProvide = (param) => 
+    param !== undefined && typeof param == "boolean"
+
 
   
 module.exports = { 
-  isStringProvided
+  isStringProvided,isBooleanProvide
 }
