@@ -32,7 +32,15 @@ let isStringProvided = validation.isStringProvided
  * @apiUse JSONError
  */ 
 router.get("/", (request, response) => {
-    let query = 'SELECT chatmembers.chatid, chats.name FROM chatmembers LEFT JOIN chats ON chatmembers.chatid = chats.chatid WHERE MemberId=$1'
+    let query = "SELECT chatmembers.chatid, chats.name, messages.message, members.firstname, members.lastname "
+                + "FROM chatmembers " 
+                + "LEFT JOIN chats ON chatmembers.chatid = chats.chatid "
+                + "LEFT JOIN messages ON messages.messageId = ( SELECT messageId FROM messages "
+                + "WHERE chatmembers.chatid  =  messages.chatid "
+                + "ORDER BY messages.timestamp DESC LIMIT 1) "
+                + "LEFT JOIN members on members.MemberId = messages.MemberId "
+                + "WHERE chatmembers.MemberId=$1 "
+                + "ORDER BY messages.timestamp DESC"
     let values = [request.decoded.memberid]
     pool.query(query, values)
         .then(result => {
