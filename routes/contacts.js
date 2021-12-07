@@ -705,28 +705,15 @@ router.post("/verify",(request,response,next)=>{
     console.log("-------------------------------------")
     console.log("Verify option: "+request.body.option)
 
-
     if(!request.decoded.memberid ||!isBooleanProvide(request.body.option)||!request.body.memberid){
         response.status(400).send({
-
            message: "Missing reuqired information"
         })
-        
     }  else {
-        
-        next()
-    
+        next()    
     }
-    
-
-
 },(request,response,next)=>{
 
-    
-  
-
-
-    
     let pushyvalues = [request.decoded.memberid,request.body.memberid]
     let pushyQuery = `SELECT Contacts.memberid_a As memberid, Members.username AS username, Push_token.token AS token  
                       FROM Contacts INNER JOIN Members ON memberid = memberid_a 
@@ -740,8 +727,6 @@ router.post("/verify",(request,response,next)=>{
 
         console.log("Notify memberid : "+request.body.memberid)
         console.log("Notify memberid token :"+token)
-
-
         let username = result.rows[0].username
         console.log("Contact request accpcted by memberid : "+result.rows[0].memberid)
         console.log("Contact request accepted by  username :"+username)
@@ -749,40 +734,29 @@ router.post("/verify",(request,response,next)=>{
         contact_function.sendVerifyStatus(token,username,request.decoded.memberid,request.body.option)
 
     }).catch(err=>{
-
-        response.status(400).send({
-            message:"SQL error at retrive token from pushy_token table",
-            err
-
-        })
+        // response.status(400).send({
+        //     message:"SQL error at retrive token from pushy_token table",
+        //     err
+        // })
     })
 
     next()
 
 },(request,response)=>{
 
-
     var values,theQuery
-
     if(request.body.option){
-
-        
-
         values = [request.decoded.memberid,request.body.memberid]
         theQuery = " UPDATE Contacts SET Verified = 1 WHERE (Memberid_a = $2 AND Memberid_b = $1 ) RETURNING *"
         pool.query(theQuery,values)
         .then(result=>{
-
             console.log("DataBase updated:")
             console.log(result.rows[0])
-
         }
         ).catch(err=>{
-
             response.status(400).send({
                 message:"SQL error at update verified",
                 err
-
             })
             return;
         })
