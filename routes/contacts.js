@@ -487,47 +487,8 @@ router.post("/",(request,response,next)=>{
            
         }
         )
-
-},(request,response,next)=>{
-
-
-    const verified = 0;
-    let values = [request.body.memberid_b,request.decoded.memberid,verified]
-    let theQueryA = "INSERT INTO Contacts(Memberid_a,Memberid_b,Verified) VALUES($1,$2,$3) RETURNING memberid_a AS memberid,memberid_b,verified"
-    pool.query(theQueryA,values)
-    .then(result=>{
-
-        if(result.rowCount == 1){
-
-           
-
-            next()
-            
-
-        } else {
-
-            response.status(400).send({
-                message:"Insert failed"
-            })
-        }
-
-
-    }
-        
-        ).catch(error=>{
-
-            response.status(400).send({
-
-                message:"Inserted Failed",
-                message:error
-            })
-
-           
-        }
-        )
-
-
-},(request,response)=>{
+},
+(request,response)=>{
     
     var token;
     let values = [request.body.memberid_b]
@@ -537,7 +498,7 @@ router.post("/",(request,response,next)=>{
 
         if(result.rowCount == 0){
 
-            response.status(404).send({
+            response.status(200).send({
 
                 message:"memberid_b pushy_token not found"
 
@@ -577,14 +538,6 @@ router.post("/",(request,response,next)=>{
 
 
     })
-
-
-    
-
-
-
-
-
 })
 
 
@@ -816,22 +769,12 @@ router.post("/verify",(request,response,next)=>{
         
 
         values = [request.decoded.memberid,request.body.memberid]
-        theQuery = " UPDATE Contacts SET Verified = 1 WHERE (Memberid_a = $1 AND Memberid_b = $2 ) OR (Memberid_a = $2 AND memberid_b = $1 ) RETURNING *"
+        theQuery = " UPDATE Contacts SET Verified = 1 WHERE (Memberid_a = $2 AND Memberid_b = $1 ) RETURNING *"
         pool.query(theQuery,values)
         .then(result=>{
 
             console.log("DataBase updated:")
             console.log(result.rows[0])
-            console.log(result.rows[1])
-
-            response.status(200).send({
-
-                message :"Updated successfully!Verified code = 1",
-                updatedrows:result.rows
-
-
-            })
-            
 
         }
         ).catch(err=>{
@@ -841,11 +784,30 @@ router.post("/verify",(request,response,next)=>{
                 err
 
             })
-
+            return;
         })
 
-        
-
+        let theQueryA = "INSERT INTO Contacts(Memberid_a,Memberid_b,Verified) VALUES($1,$2,1) RETURNING memberid_a AS memberid,memberid_b,verified"
+        pool.query(theQueryA,values)
+        .then(result=>{
+            if(result.rowCount == 1){
+                response.status(200).send({
+                    message :"Updated successfully!Verified code = 1",
+                    updatedrows:result.rows
+                })
+            } else {
+                response.status(400).send({
+                    message:"Insert failed"
+                })
+            }
+        })
+        .catch(error=>{
+            response.status(400).send({
+                message:"Inserted Failed",
+                message:error
+            })
+        }
+        )
          
         
 
@@ -880,16 +842,6 @@ router.post("/verify",(request,response,next)=>{
             })
 
         })
-
-
-
-
-
-
-
-
-        
-
     }
     
    
