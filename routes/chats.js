@@ -292,7 +292,7 @@ router.get("/:chatId", (request, response, next) => {
         })
     }, (request, response) => {
         //Retrieve the members
-        let query = `SELECT Members.Email 
+        let query = `SELECT Members.Email, Members.firstname, Members.lastname
                     FROM ChatMembers
                     INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId
                     WHERE ChatId=$1`

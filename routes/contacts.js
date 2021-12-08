@@ -740,9 +740,11 @@ router.post("/verify",(request,response,next)=>{
 },(request,response)=>{
 
     var values,theQuery
+    console.log("Second part!")
+    console.log("request.body.option", request.body.option)
     if(request.body.option){
-        values = [request.decoded.memberid,request.body.memberid]
         theQuery = " UPDATE Contacts SET Verified = 1 WHERE (Memberid_a = $2 AND Memberid_b = $1 ) RETURNING *"
+        values = [request.decoded.memberid,request.body.memberid]
         pool.query(theQuery,values)
         .then(result=>{
             console.log("DataBase updated:")
