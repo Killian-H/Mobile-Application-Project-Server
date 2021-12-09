@@ -14,6 +14,18 @@ let getHtml = function(url){
     htmlGlobal  = template(replacements);
     return htmlGlobal;
 }
+
+let getResetHtml = function(code){
+    var htmlToSend= fs.readFileSync(__dirname + '/../html/reset.html', {encoding: 'utf-8'});
+    var template = handlebars.compile(htmlToSend);
+    var replacements = {
+        resetCode:code
+    };
+    htmlGlobal  = template(replacements);
+    return htmlGlobal;
+}
+
+
 // Send email to the user from the app email account.
 let sendEmail = (receiver, mesSubject, verifyUrl) => {
 
@@ -65,7 +77,7 @@ let sendResetEmail = (receiver, mesSubject,resetCode) => {
         from: 'verify.TCSS450.Project@gmail.com',
         to: receiver,
         subject: mesSubject,
-        text:"This is your password reset code:" + resetCode
+        html:getResetHtml(resetCode)
     };
 
     // Send the email.
