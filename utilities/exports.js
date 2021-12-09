@@ -10,11 +10,14 @@ const validation = require('./validationUtils.js')
 
 const sendEmail = require('./email.js').sendEmail
 
+
+const sendResetEmail = require('./email.js').sendResetEmail
+
 let messaging = require('./pushy_utilities.js') 
 
 let resetCode = require('./resetUtilities.js')
 
 
 module.exports = { 
-    pool, generateHash, generateSalt, validation, sendEmail, messaging, resetCode
+    pool, generateHash, generateSalt, validation, sendEmail, messaging, resetCode,sendResetEmail
 }

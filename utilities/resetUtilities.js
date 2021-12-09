@@ -2,7 +2,7 @@
 /**
  * Get the random code for resetting passowrd
  * 
- * @returns 6 random characters code
+ * @returns A six-character random characters code
  */
 function getCode(){
     const length = 6;
