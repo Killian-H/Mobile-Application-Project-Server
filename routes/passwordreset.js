@@ -154,6 +154,167 @@ router.post('/',(request,response,next)=>{
 })
 
 
+router.post('/email/:email',(request,response,next)=>{
+
+    if(!isStringProvided(request.body.resetcode)
+        &&!isStringProvided(request.params.email)
+        &&!isStringProvided(request.body.newpw)
+    
+    ){
+
+        response.status(400).send({
+
+            message:"Missing required information"
+
+
+
+        })
+
+
+    }else{
+
+        next()
+
+    }
+
+
+
+
+},(request,response,next)=>{
+
+
+    let code = request.body.resetcode
+    let email = request.params.email
+
+    console.log("Code: "+code)
+    console.log("email: "+email)
+
+    let values = [email]
+    let theQuery = 'SELECT Resetcode FROM Members WHERE Email = $1 '
+    pool.query(theQuery,values)
+    .then(result=>{
+
+        if(result.rowCount == 0){
+
+            response.status(404).send({
+
+                message:"User is not found",
+
+            })
+
+        }else{
+            if(result.rows[0].resetcode==='None'){
+
+                response.status(400).send({
+
+                    message:"Reset code not found"
+
+
+
+
+                })
+
+            }else if(result.rows[0].resetcode!==code){
+
+
+
+                response.status(400).send({
+
+                    success:false,
+                    message:"Reset code not matched"
+
+
+                })     
+
+
+            }else{
+
+                next()
+
+
+            }
+            
+        
+
+        }
+
+
+
+
+    }).catch(error=>{
+
+        response.status(400).send({
+
+            message:"SQL Error",
+            error:error
+
+        }
+        
+        )
+    })
+
+
+
+
+},(request,response)=>{
+
+    const newpw = request.body.newpw
+    const email = request.params.email
+    const resetcode = request.body.resetcode
+
+    let salt = generateSalt(32)
+    let salted_hash = generateHash(newpw,salt)
+
+    console.log(salt)
+    console.log(salted_hash)
+
+
+    let values = [salted_hash,salt,email]
+    let theQuery = `UPDATE Members SET Password = $1,
+                    Salt = $2,
+                    Resetcode = 'None'
+                    WHERE Email = $3`
+
+    pool.query(theQuery,values)
+    .then(result=>{
+
+            response.status(200).send({
+
+                success:true
+
+                
+
+            })
+
+
+
+
+    }).catch(error =>{
+
+        response.status(400).send({
+
+            message:"SQL error",
+            error:error
+
+
+        })
+
+
+    })
+
+
+
+
+
+
+
+
+})
+
+
+
+
+
 module.exports = router
 
 
