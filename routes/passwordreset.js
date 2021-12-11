@@ -348,12 +348,29 @@ router.post('/verifyCode',(request,response,next)=>{
             response.status(400).send({
 
                 success:false,
-                message:"Code is not matched"
+                message:"useris not found"
 
 
             })
 
         }else{
+
+            if(result.rows[0].resetcode === 'None'){
+
+                response.status(400).send({
+
+                    success:false,
+                    message:"Resetcode is not initialized"
+    
+    
+                })
+
+
+
+            }
+
+            
+            if(result.rows[0].resetcode === request.body.code){
 
 
             response.status(200).send({
@@ -363,6 +380,20 @@ router.post('/verifyCode',(request,response,next)=>{
 
 
             })
+            
+        } else{
+
+            response.status(400).send({
+
+                success:false,
+                message:"Code is not matched"
+
+
+            })
+
+
+
+        }
 
 
 
