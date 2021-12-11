@@ -311,6 +311,94 @@ router.post('/email/:email',(request,response,next)=>{
 
 })
 
+router.post('/verifyCode',(request,response,next)=>{
+
+
+
+    if(!isStringProvided(request.body.email)&&!isStringProvided(request.body.code)){
+
+        response.status(400).send({
+
+            message:"Missing required information"
+
+
+        })
+    }else{
+
+        next()
+
+    }
+
+
+
+
+
+
+},(request,response)=>{
+
+    let values =[request.body.email]
+    let theQuery = `SELECT Resetcode FROM Members WHERE Email = $1`
+    pool.query(theQuery,values)
+    .then(result=>{
+        console.log(result.rows[0].resetcode)
+
+
+        if(result.rowCount == 0){
+
+            response.status(400).send({
+
+                success:false,
+                message:"Code is not matched"
+
+
+            })
+
+        }else{
+
+
+            response.status(200).send({
+
+                success:true,
+                message:"Code is matched"
+
+
+            })
+
+
+
+        }
+
+
+
+        
+
+
+
+
+
+
+
+
+    }).catch(error=>{
+
+        response.status(400).send({
+
+            message:"SQL Error",
+            error:error
+
+
+        })
+
+    })
+
+
+
+
+
+
+
+
+})
 
 
 
