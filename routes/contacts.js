@@ -713,13 +713,13 @@ router.post("/verify",(request,response,next)=>{
         next()    
     }
 },(request,response,next)=>{
+    let pushyQuery = `SELECT Contacts.memberid_a AS memberid, Members.firstname as username, Push_Token.token as token
+                    FROM Contacts
+                    LEFT JOIN Members ON Members.memberid = Contacts.memberid_b
+                    LEFT JOIN Push_Token ON Push_Token.memberid = Contacts.memberid_a
+                    WHERE Contacts.memberid_a = $2 AND Contacts.memberid_b = $1;`
+    let pushyvalues = [request.decoded.memberid, request.body.memberid]
 
-    let pushyvalues = [request.decoded.memberid,request.body.memberid]
-    let pushyQuery = `SELECT Contacts.memberid_a As memberid, Members.username AS username, Push_token.token AS token  
-                      FROM Contacts INNER JOIN Members ON memberid = memberid_a 
-                      INNER JOIN Push_Token ON memberid_b = Push_token.memberid 
-                      WHERE memberid_a = $1 AND memberid_b = $2`
-    
     pool.query(pushyQuery,pushyvalues)
     .then(result=>{
 
