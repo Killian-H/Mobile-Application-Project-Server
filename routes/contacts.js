@@ -733,8 +733,10 @@ router.post("/verify",(request,response,next)=>{
        
         contact_function.sendVerifyStatus(token,username,request.decoded.memberid,request.body.option)
 
+    }).catch(err=>{
+        console.log("SQL error at retrive token from pushy_token table : ", err)
     })
-
+    
     next()
 
 },(request,response)=>{
