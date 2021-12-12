@@ -35,7 +35,7 @@ let sendEmail = (receiver, mesSubject, verifyUrl) => {
         host: 'smtp.gmail.com',
         auth: {
             user: 'verify.TCSS450.Project@gmail.com',
-            pass: 'Mobile-Application-Project'
+            pass: 'Mobile-Application-Project2021!'
         }
     });
 
@@ -67,7 +67,7 @@ let sendResetEmail = (receiver, mesSubject,resetCode) => {
         host: 'smtp.gmail.com',
         auth: {
             user: 'verify.TCSS450.Project@gmail.com',
-            pass: 'Mobile-Application-Project'
+            pass: 'Mobile-Application-Project2021!'
         }
     });
 
