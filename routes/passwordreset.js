@@ -124,7 +124,7 @@ router.post('/',(request,response,next)=>{
 
         if(result.rowCount == 1){
 
-            sendResetEmail(request.body.email,"Password Reset,not reply!",resetCode)
+            sendResetEmail(request.body.email,"Password Reset, do not reply!",resetCode)
 
             response.status(200).send({
 
