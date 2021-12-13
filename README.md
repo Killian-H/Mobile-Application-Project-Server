@@ -1,5 +1,5 @@
-# tcss-450-labs-base
-This is the base Repository for the Node.js web service used in TCSS 450 Labs. 
+# TEA TIME CHAT APP SERVER
+This is the base Repository for the Node.js web service used for Tea Time Chat App. 
 * `package.json` and `package-lock.json`
     * These files are used to describe dependencies for the project. There are several packages we use for connecting to databases, connecting to our Mail client, etc.
     * Highly recommended reading: https://docs.npmjs.com/files/package.json
