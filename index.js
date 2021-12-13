@@ -31,7 +31,6 @@ app.use('/auth', require('./routes/signin.js'))
  
 
  app.use('/search_member',require('./routes/searchmember'))
-
  
  app.use('/contacts', middleware.checkToken,require('./routes/contacts.js'))
 

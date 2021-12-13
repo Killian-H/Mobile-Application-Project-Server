@@ -1,3 +1,4 @@
+//express is the framework we're going to use to handle requests
 const express = require('express')
 
 //Access the connection to Heroku Database
@@ -28,13 +29,13 @@ const router = express.Router()
 
 
 /**
- * @api {post}  Request password Change
+ * @api {post} /passwordreset Request a password reset 
  * @apiName ResetPassword
  * @apiGroup Password
  * 
  * @apiDescription Request password change and send random code to the email
  * 
- * @apiParam {String} User Email
+ * @apiParam {String} Email user Email
  * 
  * 
  * @apiParamExample {json} Request-Body-Example:
@@ -47,10 +48,7 @@ const router = express.Router()
  * @apiError (400: Missing Parameters) {String} message "Missing required information:email"
  * @apiError (404:Usser not found) {String} message "User not found"
  * 
- * 
  * @apiError (400: SQL Error) {String} message the reported SQL error details
- * 
- * @apiError (400: Unknown Chat ID) {String} message "invalid chat id"
  * 
  * @apiUse JSONError
  */ 
@@ -126,7 +124,7 @@ router.post('/',(request,response,next)=>{
 
         if(result.rowCount == 1){
 
-            sendResetEmail(request.body.email,"Password Reset,not reply!",resetCode)
+            sendResetEmail(request.body.email,"Password Reset, do not reply!",resetCode)
 
             response.status(200).send({
 
@@ -152,6 +150,29 @@ router.post('/',(request,response,next)=>{
 
 
 })
+
+/**
+ * @api {post} passwordresets/email/:email? Change the password to the given email
+ * @apiName ChangePassword
+ * @apiGroup Password
+ * 
+ * @apiDescription Receive the rest code and the new password, if the reset code is matched,
+ * update new password to the database
+ * 
+ * @apiParam {String} email (request parameter)user email address 
+ * @apiParam {String} resetcode  reset code for the password reset
+ * @apiParam {String} newpw new password 
+ * 
+ * @apiSuccess {Boolean} success true if the password has changed otherwise false
+ * 
+ * @apiError (400: Miss require parameter) {String} message "Missing required information"
+ * @apiError (404: User Not Found) {String} message "User is not found"
+ * @apiError (400: Resetcode Not Found) {String} message "Reset code not found" 
+   @apiError (400: Resetcode Not Matched) {String} message "Reset code is not matched" 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */
 
 
 router.post('/email/:email',(request,response,next)=>{
@@ -208,8 +229,6 @@ router.post('/email/:email',(request,response,next)=>{
                 response.status(400).send({
 
                     message:"Reset code not found"
-
-
 
 
                 })
@@ -303,13 +322,30 @@ router.post('/email/:email',(request,response,next)=>{
     })
 
 
-
-
-
-
-
-
 })
+
+
+/**
+ * @api {post} passwordresets/verifyCode Verify reset code 
+ * @apiName VerifyResetCode
+ * @apiGroup Password
+ * 
+ * @apiDescription  Verify the reset code, the reset code is the code sent to the email
+ * 
+ * @apiParam {String} email the email that received the reset code
+ * @apiParam {String} resetcode reset code 
+ * 
+ * @apiSuccess {Boolean} success true if the reset code is matched,otherwise false
+ * @apiSuccess {String} message whether the code is matched to the one in the database
+ * 
+ * @apiError (400: Miss require parameter) {String} message "Missing required information"
+ * @apiError (404: User Not Found) {String} message "User is not found"
+ * @apiError (400: Resetcode Not Found) {String} message "Reset code not found" 
+ * @apiError (400: Resetcode is not matched) {String} message "Code is not matched" 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */
 
 router.post('/verifyCode',(request,response,next)=>{
 
@@ -348,7 +384,7 @@ router.post('/verifyCode',(request,response,next)=>{
             response.status(400).send({
 
                 success:false,
-                message:"useris not found"
+                message:"user is not found"
 
 
             })
@@ -360,7 +396,7 @@ router.post('/verifyCode',(request,response,next)=>{
                 response.status(400).send({
 
                     success:false,
-                    message:"Resetcode is not initialized"
+                    message:"No reset code found"
     
     
                 })
@@ -398,16 +434,6 @@ router.post('/verifyCode',(request,response,next)=>{
 
 
         }
-
-
-
-        
-
-
-
-
-
-
 
 
     }).catch(error=>{
