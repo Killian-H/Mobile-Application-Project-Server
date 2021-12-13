@@ -5,6 +5,11 @@ const fs = require('fs');
 // Mail: verify.TCSS450.Project@gmail.com
 // password: Mobile-Application-Project
 
+/**Get the html file from the path for email verification
+ * 
+ * @param {String} url the url that use to verify the user
+ * @returns the verify email html template
+ */
 let getHtml = function(url){
     var htmlToSend= fs.readFileSync(__dirname + '/../html/mail.html', {encoding: 'utf-8'});
     var template = handlebars.compile(htmlToSend);
@@ -14,6 +19,14 @@ let getHtml = function(url){
     htmlGlobal  = template(replacements);
     return htmlGlobal;
 }
+
+/**Get the html file from the path for password reset
+ * 
+ * @param {String} code tha reset code 
+ * 
+ * @returns the reset code email html template
+ * 
+ */
 
 let getResetHtml = function(code){
     var htmlToSend= fs.readFileSync(__dirname + '/../html/reset.html', {encoding: 'utf-8'});
@@ -25,8 +38,12 @@ let getResetHtml = function(code){
     return htmlGlobal;
 }
 
-
-// Send email to the user from the app email account.
+/**Send the verify email to the user
+ * 
+ * @param {String} receiver the email receiver
+ * @param {String} mesSubject the email subject
+ * @param {String} url the url that use to verify user in the resigter stage
+ */
 let sendEmail = (receiver, mesSubject, verifyUrl) => {
 
     // Set up transporter with email.
@@ -57,6 +74,13 @@ let sendEmail = (receiver, mesSubject, verifyUrl) => {
         }
     });
 }
+
+/**Send the reset code email to the user
+ * 
+ * @param {String} receiver the email receiver
+ * @param {String} mesSubject the email subject
+ * @param {String} resetcode the resetcode use for password reset
+ */
 
 
 let sendResetEmail = (receiver, mesSubject,resetCode) => {

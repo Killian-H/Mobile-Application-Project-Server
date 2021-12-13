@@ -28,8 +28,11 @@ const router = express.Router()
  * 
  * @apiDescription Request to get list of contacts
  * @apiHeader {String} authorization Valid JSON Web Token JWT
- * 
- * @apiSuccess {Object[]} the contact list of the user
+
+
+*  @apiSuccess {Number} memberid assoicated with the list of contacts
+ * @apiSuccess {Number} rowsCount number of contact in the list
+ * @apiSuccess {Object[]} rows contact list of the user
  * 
  * @apiError (400: Missing required information) {String} message the missing token information
  * 
@@ -91,7 +94,9 @@ router.get('/' , (request, response,next) => {
  * @apiDescription Request to get list of incoming contact requests. 
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
- * @apiSuccess {Object[]} the contact list of the user
+ * @apiSuccess {Memberid} memberid The memberid assoicated with the list of incoming contact requests
+ * @apiSuccess {Number}  rowCount the number of incoming contact requests
+ * @apiSuccess {Object[]} rows list of incoming contact request
  * 
  * @apiError (400: Missing required information) {String} message the missing token information
  * 
@@ -142,18 +147,16 @@ router.get('/' , (request, response,next) => {
 
 
 /**
- * @apiDefine JSONError
  * 
- * @api {post} /search  search a user from the database for adding other users to the contact
+ * @api {post} /search  search a user from the database
  * @apiName SearchContacts
  * @apiGroup Contacts
  * 
- * @apiDescription Search a user by its id,username or email
+ * @apiDescription Search a user by its id,username or email,username and email are optional
  * @apiHeader {String} authorization Valid JSON Web Token JWT
- * 
  * @apiParam {Number}memberid memberid to search the user
- * @apiParam {String}email email to search the user
- * @apiParam {String}username username to search the user
+ * @apiParam {String}email(Optional) email to search the user
+ * @apiParam {String}username(Optional) username to search the user
  * 
  * @apiParamExample {json} Request-Body-Example:
  *  
@@ -178,11 +181,7 @@ router.get('/' , (request, response,next) => {
 
 router.post("/search",(request,response,next)=>{
 
-    console.log(request.body.username)
-    console.log(request.body.email)
-    console.log(request.body.memberid)
     
-
     if(!isStringProvided(request.body.username) & !isStringProvided(request.body.email) & isNaN(request.body.memberid)){
 
 
@@ -256,9 +255,6 @@ router.post("/search",(request,response,next)=>{
 
 
     }
-    console.log("The final values is "+values)
-    console.log("The final query is "+theQuery)
-
 
     pool.query(theQuery,values)
     .then(result=>{
@@ -302,30 +298,18 @@ router.post("/search",(request,response,next)=>{
 
         })
     
-    
-
-
-    
-
-    
-  
-    
-
-
 
 
 })
 
 
 
-
-
 /**
- * @api {post} /contacts add a user into the contacts 
+ * @api {post} /contacts add a user into the contacts
  * @apiName PostContacts
  * @apiGroup Contacts
  * 
- * @apiDescription Insert a user into the contacts
+ * @apiDescription Insert a user into the contacts and send the pushy notification to the user
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
  * 
@@ -340,8 +324,8 @@ router.post("/search",(request,response,next)=>{
  * 
  * 
  * 
- * @apiSuccess {boolean} success true when the user sucessfully inserted
- * @apiSuccess {} 
+ * @apiSuccess {boolean} success if true when the user sucessfully inserted
+ * @apiSuccess {String}  message message about the insertion
  * 
  * 
  * @apiError (400: Missing required information) {String} message "Missing required information"
@@ -550,7 +534,7 @@ router.post("/",(request,response,next)=>{
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
  * 
- * @apiParam {Number} memberid_b the member id to remove from the contact
+ * @apiParam {Number} memberid_b The member id to remove from the contact
  * 
  * @apiParamExample {json} Request-Body-Example:
  *  
@@ -562,7 +546,7 @@ router.post("/",(request,response,next)=>{
  * 
  * 
  * @apiSuccess {boolean} success true when the user is sucessfully deleted
- * @apiSuccess {Object[]} row the deleted row information
+ * @apiSuccess {Object[]} rows the deleted row information
  * 
  * 
  * @apiError (400: Missing required information) {String} message "Missing required information"
@@ -700,6 +684,42 @@ router.delete('/:memberid_b',(request,response,next)=>{
 })
 
 
+/**
+ * @api {post} /contacts/Verify Verify contact request from user
+ * @apiName VerifyContacts
+ * @apiGroup Contacts
+ * 
+ * @apiDescription Verify user acceptance for a contact request
+ * @apiHeader {String} authorization Valid JSON Web Token JWT
+ * 
+ * 
+ * @apiParam {Boolean} option true if the user accepet the contact request,otherwise false
+ * @apiParam {Number} memberid the memberid who sent the contact request to the user
+ * @apiParamExample {json} Request-Body-Example:
+ *  
+ *     {
+ *       "option": true,
+ *       "memberid":35
+ *       
+ *     } 
+ * 
+ * 
+ * 
+ * @apiSuccess {String} message: "Updated successfully!Verified code = 1" if the user accepet the contact request
+ * @apiSuccess {Object[]} updaterows: Row updated successfully in the contact table
+ * 
+ * @apiSuccess {String} message: "Removed successfully!User declined contact request" if the user decline the contact request
+ * @apiSuccess {Object[]} deletedrows: Row deleted successfully in the contact table
+ * 
+ * 
+ * @apiError (400: Missing required information) {String} message "Missing required information"
+ * 
+ * @apiError (400: SQL Error) {String} message and the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */
+
+
 router.post("/verify",(request,response,next)=>{
    
     console.log("-------------------------------------")
@@ -729,7 +749,6 @@ router.post("/verify",(request,response,next)=>{
         console.log("Notify memberid token :"+token)
         let username = result.rows[0].username
         console.log("Contact request accpcted by memberid : "+result.rows[0].memberid)
-        console.log("Contact request accepted by  username :"+username)
        
         contact_function.sendVerifyStatus(token,username,request.decoded.memberid,request.body.option)
 
@@ -742,7 +761,6 @@ router.post("/verify",(request,response,next)=>{
 },(request,response)=>{
 
     var values,theQuery
-    console.log("Second part!")
     console.log("request.body.option", request.body.option)
     if(request.body.option){
         theQuery = " UPDATE Contacts SET Verified = 1 WHERE (Memberid_a = $2 AND Memberid_b = $1 ) RETURNING *"
@@ -776,7 +794,7 @@ router.post("/verify",(request,response,next)=>{
         })
         .catch(error=>{
             response.status(400).send({
-                message:"Inserted Failed",
+                message:"SQL Error at insert a member",
                 message:error
             })
         }

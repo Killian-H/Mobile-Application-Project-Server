@@ -29,6 +29,7 @@ function sendMessageToIndividual(token, message) {
     })
 }
 
+//use to send contact request to a specific client by the token
 function sendContactToIndividual(token,username,memberid) {
 
     //build the message for Pushy to send
@@ -55,7 +56,7 @@ function sendContactToIndividual(token,username,memberid) {
     })
 }
 
-
+//use to send contact request response to a specific client by the token
 function sendVerifyStatus(token,username,memberid,option) {
 
     var message
